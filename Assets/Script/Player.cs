@@ -13,17 +13,20 @@ public class Player : MonoBehaviourPunCallbacks
 
     [SerializeField] float Speed;
     [SerializeField] float AngleSpeed;
+    [SerializeField] string BulletName;
 
     [SerializeField] Transform Barrel;
     [SerializeField] Transform po;
     [SerializeField] Animator animator, player;
     [SerializeField] GameObject canvas;
+    [SerializeField] GameObject forward;
+    [SerializeField] ParticleSystem tiya;
 
     [SerializeField] Sprite full, empty;
     [SerializeField] Image[] heart;
 
     int HP;
-    bool shotable;
+    bool shotable, muteki;
     // Start is called before the first frame update
     void Start()
     {
@@ -31,11 +34,27 @@ public class Player : MonoBehaviourPunCallbacks
         {
             rb = GetComponent<Rigidbody2D>();
             player = GetComponent<Animator>();
+            
             shotable = true;
+            muteki = false;
             transform.tag = "Player";
-            HP = 5;
+            HP = 3;
             canvas.SetActive(true);
+            forward.SetActive(true);
+            for (int i = 0; i < 3; i++)
+            {
+                if (i < HP)
+                {
+                    heart[i].sprite = full;
+                }
+                else
+                {
+                    heart[i].sprite = empty;
+                }
+            }
         }
+
+        tiya = GetComponent<ParticleSystem>();
     }
 
     // Update is called once per frame
@@ -58,7 +77,7 @@ public class Player : MonoBehaviourPunCallbacks
 
             if (Input.GetMouseButtonDown(0) && shotable)
             {
-                PhotonNetwork.Instantiate("bullet", po.position, Quaternion.Euler(0, 0, angle - 180f));
+                PhotonNetwork.Instantiate(BulletName, po.position, Quaternion.Euler(0, 0, angle - 180f));
                 animator.SetBool("Shot", true);
                 shotable = false;
                 DOVirtual.DelayedCall(1, () =>
@@ -67,19 +86,23 @@ public class Player : MonoBehaviourPunCallbacks
                     animator.SetBool("Shot", false);
                 });
             }
+
+            
         }
+        tiya.startRotation = -transform.eulerAngles.z * Mathf.Deg2Rad;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (photonView.IsMine)
         {
-            if (collision.CompareTag("Bullet"))
+            if (collision.CompareTag("Bullet") && !muteki)
             {
-                Debug.Log("hit!!");
+                
+                Debug.LogWarning("hit!!");
                 HP--;
 
-                for(int i = 0;i < 5;i++)
+                for(int i = 0;i < 3;i++)
                 {
                     if(i < HP)
                     {
@@ -91,7 +114,16 @@ public class Player : MonoBehaviourPunCallbacks
                     }
                 }
 
-                if (HP == 0) player.SetBool("Death", true);
+                if (HP == 0)
+                {
+                    player.SetBool("Death", true);
+                    DOVirtual.DelayedCall(3, () =>ReSpawn());
+                }
+                else
+                {
+                    muteki = true;
+                    DOVirtual.DelayedCall(0.5f, ()=>muteki = false);
+                }
             }
         }
     }
@@ -108,11 +140,13 @@ public class Player : MonoBehaviourPunCallbacks
     {
         if(photonView.IsMine)
         {
-            HP = 5;
-            for (int i = 0; i < 5; i++)
+            HP = 3;
+            for (int i = 0; i < 3; i++)
             {
                 heart[i].sprite = full;
             }
+
+            player.SetBool("Death", false);
         }
     }
 }
