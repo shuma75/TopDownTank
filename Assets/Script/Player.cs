@@ -60,7 +60,7 @@ public class Player : MonoBehaviourPunCallbacks
     // Update is called once per frame
     void Update()
     {
-        if(photonView.IsMine && HP > 0)
+        if(photonView.IsMine && HP > 0 && GameManager.instance.inGame)
         {
             var Vertical = Input.GetAxis("Vertical");
             var Horizontal = Input.GetAxis("Horizontal");
@@ -87,7 +87,13 @@ public class Player : MonoBehaviourPunCallbacks
                 });
             }
 
-            
+
+        }
+        
+        if(photonView.IsMine &&!GameManager.instance.inGame)
+        {
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0;
         }
         tiya.startRotation = -transform.eulerAngles.z * Mathf.Deg2Rad;
     }
@@ -100,6 +106,8 @@ public class Player : MonoBehaviourPunCallbacks
             {
                 
                 Debug.LogWarning("hit!!");
+                var owner = collision.GetComponent<PhotonView>();
+                photonView.RPC(nameof(Hit), RpcTarget.All, owner.Owner);
                 HP--;
 
                 for(int i = 0;i < 3;i++)
@@ -118,6 +126,9 @@ public class Player : MonoBehaviourPunCallbacks
                 {
                     player.SetBool("Death", true);
                     DOVirtual.DelayedCall(3, () =>ReSpawn());
+
+                    photonView.RPC(nameof(Kill), RpcTarget.All, owner.Owner);
+                    photonView.RPC(nameof(Death), RpcTarget.All, photonView.Owner);
                 }
                 else
                 {
@@ -148,5 +159,23 @@ public class Player : MonoBehaviourPunCallbacks
 
             player.SetBool("Death", false);
         }
+    }
+
+    [PunRPC]
+    private void Hit(Photon.Realtime.Player player)
+    {
+        GameManager.instance.SetHitCount(player);
+    }
+
+    [PunRPC]
+    private void Kill(Photon.Realtime.Player player)
+    {
+        GameManager.instance.SetKillCount(player);
+    }
+
+    [PunRPC]
+    private void Death(Photon.Realtime.Player player)
+    {
+        GameManager.instance.SetDeathCount(player);
     }
 }
