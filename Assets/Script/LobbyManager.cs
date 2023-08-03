@@ -6,6 +6,7 @@ using UniRx;
 using Photon.Pun;
 using Photon.Realtime;
 using Cinemachine;
+using UnityEngine.SceneManagement;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
@@ -26,6 +27,9 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     [SerializeField] Button LiBackButton;
     [Header("ロビー")]
     [SerializeField] Button GameStartButton;
+    [SerializeField] Button LoQuitButton;
+    [SerializeField] Button LoOptionButton;
+    [SerializeField] Text[] PlayerName;
     [Header("オプション")]
     [SerializeField] Button CreditButton;
     [Header("クレジット")]
@@ -36,6 +40,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         StartButton.onClick.AddListener(()=>GameStart());
         CreateRoomButton.onClick.AddListener(()=>CreateRoom());
+        GameStartButton.onClick.AddListener(()=>StartGame());
+        LoQuitButton.onClick.AddListener(()=>PhotonNetwork.LeaveRoom());
     }
 
     private void GameStart()
@@ -95,5 +101,54 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Lobby.Priority = 15;
+
+        SetMenberList();
+    }
+
+    public override void OnLeftRoom()
+    {
+        Lobby.Priority = 0;
+    }
+
+    public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)
+    {
+        SetMenberList();
+    }
+
+    public override void OnPlayerLeftRoom(Photon.Realtime.Player otherPlayer)
+    {
+        SetMenberList();
+    }
+
+    private void SetMenberList()
+    {
+        foreach(Text text in PlayerName)
+        {
+            text.transform.parent.gameObject.SetActive(false);
+        }
+
+        var players = PhotonNetwork.PlayerList;
+
+        for (int i = 0;i < players.Length;i++)
+        {
+            PlayerName[i].transform.parent.gameObject.SetActive(true);
+            PlayerName[i].text = players[i].NickName;
+        }
+    }
+
+    private void StartGame()
+    {
+        if (PhotonNetwork.LocalPlayer.IsMasterClient)
+        {
+            photonView.RPC(nameof(MoveGameScene), RpcTarget.All);
+        }
+    }
+
+    [PunRPC]
+    private void MoveGameScene()
+    {
+        PhotonNetwork.IsMessageQueueRunning = false;
+
+        SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
     }
 }
