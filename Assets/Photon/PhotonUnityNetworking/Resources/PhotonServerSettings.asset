@@ -46,6 +46,9 @@ MonoBehaviour:
   - Hit
   - Kill
   - MoveGameScene
+  - EndGameRPC
+  - CheckPlayer
+  - StartGame
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

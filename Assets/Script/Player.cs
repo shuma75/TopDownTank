@@ -52,6 +52,8 @@ public class Player : MonoBehaviourPunCallbacks
                     heart[i].sprite = empty;
                 }
             }
+
+            transform.parent = GameManager.instance.transform;
         }
 
         tiya = GetComponent<ParticleSystem>();

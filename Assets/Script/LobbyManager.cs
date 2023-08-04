@@ -34,14 +34,23 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     [SerializeField] Button CreditButton;
     [Header("クレジット")]
     [SerializeField] Button BackButton;
-    
+
+    [SerializeField] Button GameEndButton;
+
     // Start is called before the first frame update
     void Start()
     {
-        StartButton.onClick.AddListener(()=>GameStart());
-        CreateRoomButton.onClick.AddListener(()=>CreateRoom());
+        StartButton.onClick.AddListener(() => GameStart());
+        CreateRoomButton.onClick.AddListener(() => CreateRoom());
+        LiBackButton.onClick.AddListener(() =>
+        { 
+            LobbyList.Priority = 0;
+            if (PhotonNetwork.IsConnected)
+                PhotonNetwork.Disconnect();
+        });
         GameStartButton.onClick.AddListener(()=>StartGame());
         LoQuitButton.onClick.AddListener(()=>PhotonNetwork.LeaveRoom());
+        GameEndButton.onClick.AddListener(()=>EndGame());
     }
 
     private void GameStart()
@@ -134,11 +143,20 @@ public class LobbyManager : MonoBehaviourPunCallbacks
             PlayerName[i].transform.parent.gameObject.SetActive(true);
             PlayerName[i].text = players[i].NickName;
         }
+
+        if (PhotonNetwork.LocalPlayer.IsMasterClient)
+        {
+            GameStartButton.interactable = true;
+        }
+        else
+        {
+            GameStartButton.interactable = false;
+        }
     }
 
     private void StartGame()
     {
-        if (PhotonNetwork.LocalPlayer.IsMasterClient)
+        if (PhotonNetwork.LocalPlayer.IsMasterClient/* && PhotonNetwork.PlayerList.Length >= 2*/)
         {
             photonView.RPC(nameof(MoveGameScene), RpcTarget.All);
         }
@@ -149,6 +167,29 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.IsMessageQueueRunning = false;
 
-        SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
+        SceneManager.LoadSceneAsync("Game", LoadSceneMode.Additive);
+    }
+
+    private void EndGame()
+    {
+        if (PhotonNetwork.LocalPlayer.IsMasterClient)
+        {
+            photonView.RPC(nameof(EndGameRPC), RpcTarget.All);
+        }
+    }
+
+    [PunRPC]
+    private void EndGameRPC()
+    {
+        StartCoroutine(EndGameIE());
+    }
+
+    private IEnumerator EndGameIE()
+    {
+        PhotonNetwork.IsMessageQueueRunning = false;
+
+        yield return SceneManager.UnloadSceneAsync("Game", UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
+
+        PhotonNetwork.IsMessageQueueRunning = true;
     }
 }
