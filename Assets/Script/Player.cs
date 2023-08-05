@@ -6,6 +6,7 @@ using DG.Tweening;
 using Photon.Pun;
 using Photon.Realtime;
 using Cinemachine;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Player : MonoBehaviourPunCallbacks
@@ -42,7 +43,7 @@ public class Player : MonoBehaviourPunCallbacks
             transform.tag = "Player";
             HP = 3;
             canvas.SetActive(true);
-            forward.SetActive(true);
+            //forward.SetActive(true);
             for (int i = 0; i < 3; i++)
             {
                 if (i < HP)
@@ -59,8 +60,6 @@ public class Player : MonoBehaviourPunCallbacks
 
             PlayerCamera.Priority = 100;
         }
-
-        tiya = GetComponent<ParticleSystem>();
     }
 
     // Update is called once per frame
@@ -70,6 +69,15 @@ public class Player : MonoBehaviourPunCallbacks
         {
             var Vertical = Input.GetAxis("Vertical");
             var Horizontal = Input.GetAxis("Horizontal");
+
+            if(Mathf.Abs(Vertical) > 0)
+            {
+                tiya.Play();
+            }
+            else
+            {
+                tiya.Pause();
+            }
 
             rb.velocity = transform.rotation * new Vector2(0, -Vertical * Speed);
             rb.angularVelocity = -Horizontal * AngleSpeed;
@@ -101,6 +109,7 @@ public class Player : MonoBehaviourPunCallbacks
             rb.velocity = Vector2.zero;
             rb.angularVelocity = 0;
         }
+
         tiya.startRotation = -transform.eulerAngles.z * Mathf.Deg2Rad;
     }
 

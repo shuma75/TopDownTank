@@ -969,7 +969,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8814564544742363255}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.365, y: 0.021, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1075,7 +1075,8 @@ MonoBehaviour:
   player: {fileID: 0}
   canvas: {fileID: 2598417361352491983}
   forward: {fileID: 8123572233272100355}
-  tiya: {fileID: 0}
+  tiya: {fileID: 855902377573431959}
+  PlayerCamera: {fileID: 4571810507726374530}
   full: {fileID: 21300000, guid: 436fbbdd674d08843a0d2139fcbed431, type: 3}
   empty: {fileID: 21300000, guid: c3b2eee0cec069e47957a4b466f71aff, type: 3}
   heart:
@@ -1131,7 +1132,7 @@ MonoBehaviour:
   - {fileID: 6823678595659943828}
   - {fileID: 3637669602733898727}
   - {fileID: 8814564543414135616}
-  sceneViewId: 1
+  sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!114 &8814564544742363273
@@ -5941,7 +5942,7 @@ ParticleSystemRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -1
-  m_RenderMode: 0
+  m_RenderMode: 3
   m_MeshDistribution: 0
   m_SortMode: 0
   m_MinParticleSize: 0

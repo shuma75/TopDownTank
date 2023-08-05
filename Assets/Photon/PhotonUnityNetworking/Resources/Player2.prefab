@@ -1075,7 +1075,8 @@ MonoBehaviour:
   player: {fileID: 0}
   canvas: {fileID: 2598417361352491983}
   forward: {fileID: 8563908679842523289}
-  tiya: {fileID: 0}
+  tiya: {fileID: 855902377573431959}
+  PlayerCamera: {fileID: 986074083159609077}
   full: {fileID: 21300000, guid: 436fbbdd674d08843a0d2139fcbed431, type: 3}
   empty: {fileID: 21300000, guid: c3b2eee0cec069e47957a4b466f71aff, type: 3}
   heart:
