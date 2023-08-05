@@ -92,8 +92,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbbafd7b5d8a30c4f95e6fddf966f4e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerName: {fileID: 0}
-  KillCount: {fileID: 0}
+  PlayerName: {fileID: 8708132674789269626}
+  KillCount: {fileID: 8708132675507374171}
 --- !u!1 &8708132674789269624
 GameObject:
   m_ObjectHideFlags: 0

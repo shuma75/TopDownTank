@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using Photon.Pun;
 using Photon.Realtime;
+using Cinemachine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Player : MonoBehaviourPunCallbacks
@@ -21,6 +22,7 @@ public class Player : MonoBehaviourPunCallbacks
     [SerializeField] GameObject canvas;
     [SerializeField] GameObject forward;
     [SerializeField] ParticleSystem tiya;
+    [SerializeField] CinemachineVirtualCamera PlayerCamera;
 
     [SerializeField] Sprite full, empty;
     [SerializeField] Image[] heart;
@@ -54,6 +56,8 @@ public class Player : MonoBehaviourPunCallbacks
             }
 
             transform.parent = GameManager.instance.transform;
+
+            PlayerCamera.Priority = 100;
         }
 
         tiya = GetComponent<ParticleSystem>();

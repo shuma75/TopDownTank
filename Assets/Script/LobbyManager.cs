@@ -42,6 +42,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         StartButton.onClick.AddListener(() => GameStart());
         CreateRoomButton.onClick.AddListener(() => CreateRoom());
+        EndButton.onClick.AddListener(()=>Application.Quit());
         LiBackButton.onClick.AddListener(() =>
         { 
             LobbyList.Priority = 0;

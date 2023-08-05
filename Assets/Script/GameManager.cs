@@ -7,6 +7,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
+using System.Linq;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -62,7 +63,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void SetHitCount(Photon.Realtime.Player player)
     {
         playerScore[player.ActorNumber - 1].hit++;
-        Debug.LogError(playerScore[player.ActorNumber - 1].hit);
     }
 
     public void SetKillCount(Photon.Realtime.Player player)
@@ -121,17 +121,41 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         yield return new WaitForSeconds(1);
 
-        string[] nameList = new string[PhotonNetwork.PlayerList.Length];
-        int[] killList = new int[PhotonNetwork.PlayerList.Length];
 
+        if (PhotonNetwork.LocalPlayer.IsMasterClient)
+        {
+            List<string> nameList = new List<string>();
+            List<int> killList = new List<int>();
 
+            var sort = playerScore.OrderByDescending(x => x.kill);
+
+            foreach (PlayerScore data in sort)
+            {
+                nameList.Add(PhotonNetwork.PlayerList[data.id].NickName);
+                killList.Add(data.kill);
+            }
+
+            for(int i = 0;i < nameList.Count; i++)
+            {
+                Debug.Log(nameList[i]);
+                Debug.Log(killList[i]);
+            }
+
+            photonView.RPC(nameof(ShowResult), RpcTarget.All, nameList.ToArray(), killList.ToArray());
+        }
     }
 
+    [PunRPC]
     private void ShowResult(string[] nameList, int[] killList)
     {
+        RankParent.parent.gameObject.SetActive(true);
+        int x = -1, index= -1;
         for(int i = 0;i < nameList.Length; i++)
         {
-
+            if (x != killList[i]) index++;
+            var a = Instantiate(rankElement[index], RankParent);
+            a.SetData(nameList[i], killList[i]);
+            x = killList[i];
         }
     }
 }

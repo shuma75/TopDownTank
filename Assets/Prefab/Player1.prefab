@@ -173,7 +173,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerName: {fileID: 1611370957576707602}
-  KillCount: {fileID: 1611370958164677945}
+  KillCount: {fileID: 1611370956842437464}
 --- !u!1 &1611370957576707600
 GameObject:
   m_ObjectHideFlags: 0

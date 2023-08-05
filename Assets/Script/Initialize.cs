@@ -20,7 +20,7 @@ public class Initialize : MonoBehaviourPunCallbacks
 
         if(PhotonNetwork.LocalPlayer.IsMasterClient) ChPl = new bool[PhotonNetwork.PlayerList.Length];
 
-        photonView.RPC(nameof(CheckPlayer), RpcTarget.MasterClient, localPlayer.ActorNumber);
+        photonView.RPC(nameof(CheckPlayer), RpcTarget.MasterClient, localPlayer.ActorNumber-1);
     }
 
     [PunRPC]
