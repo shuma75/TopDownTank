@@ -6,7 +6,6 @@ using DG.Tweening;
 using Photon.Pun;
 using Photon.Realtime;
 using Cinemachine;
-using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Player : MonoBehaviourPunCallbacks

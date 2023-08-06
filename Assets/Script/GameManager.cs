@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public ReactiveProperty<int> timer;
     [SerializeField] private Text TimerText;
     [SerializeField] private Text CountDownText;
+    [SerializeField] private Button EndButton;
 
     [SerializeField] private Transform RankParent;
     [SerializeField] private RankElement[] rankElement;
@@ -47,6 +48,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     void Start()
     {
         playerScore = new PlayerScore[PhotonNetwork.PlayerList.Length];
+        EndButton.onClick.AddListener(()=>EndGame());
         for(int i = 0;i < playerScore.Length; i++)
         {
             playerScore[i].id = i;
@@ -157,5 +159,19 @@ public class GameManager : MonoBehaviourPunCallbacks
             a.SetData(nameList[i], killList[i]);
             x = killList[i];
         }
+    }
+
+    private void EndGame()
+    {
+        if (PhotonNetwork.LocalPlayer.IsMasterClient)
+        {
+            photonView.RPC(nameof(EndGameRPC), RpcTarget.All);
+        }
+    }
+
+    [PunRPC]
+    private void EndGameRPC()
+    {
+        StartCoroutine(LobbyManager.Instance.EndGameIE());
     }
 }

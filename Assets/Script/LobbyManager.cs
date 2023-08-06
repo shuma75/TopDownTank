@@ -10,6 +10,20 @@ using UnityEngine.SceneManagement;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
+    public static LobbyManager Instance;
+
+    private void Awake()
+    {
+        if(Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(this);
+        }
+    }
+
     [Header("カメラ")]
     [SerializeField] CinemachineVirtualCamera Title;
     [SerializeField] CinemachineVirtualCamera LobbyList, Lobby, Option, Credit;
@@ -34,9 +48,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     [SerializeField] Button CreditButton;
     [Header("クレジット")]
     [SerializeField] Button BackButton;
-
-    [SerializeField] Button GameEndButton;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -51,7 +62,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         });
         GameStartButton.onClick.AddListener(()=>StartGame());
         LoQuitButton.onClick.AddListener(()=>PhotonNetwork.LeaveRoom());
-        GameEndButton.onClick.AddListener(()=>EndGame());
     }
 
     private void GameStart()
@@ -171,26 +181,13 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         SceneManager.LoadSceneAsync("Game", LoadSceneMode.Additive);
     }
 
-    private void EndGame()
-    {
-        if (PhotonNetwork.LocalPlayer.IsMasterClient)
-        {
-            photonView.RPC(nameof(EndGameRPC), RpcTarget.All);
-        }
-    }
-
-    [PunRPC]
-    private void EndGameRPC()
-    {
-        StartCoroutine(EndGameIE());
-    }
-
-    private IEnumerator EndGameIE()
+    public IEnumerator EndGameIE()
     {
         PhotonNetwork.IsMessageQueueRunning = false;
 
         yield return SceneManager.UnloadSceneAsync("Game", UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
 
+        Debug.Log("終わった");
         PhotonNetwork.IsMessageQueueRunning = true;
     }
 }

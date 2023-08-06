@@ -8184,6 +8184,7 @@ MonoBehaviour:
     value: 0
   TimerText: {fileID: 1102362122}
   CountDownText: {fileID: 1858155820}
+  EndButton: {fileID: 1565447050}
   RankParent: {fileID: 1088830472}
   rankElement:
   - {fileID: 1009828759670788544, guid: 10a68ae187d11974b8ede24e2dae2d85, type: 3}
