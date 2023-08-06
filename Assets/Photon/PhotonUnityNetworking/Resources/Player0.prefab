@@ -1151,7 +1151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fe6bfcb82370a54ca1409ad5c538447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 0.6
+  Speed: 1
   AngleSpeed: 45
   BulletName: bullet5
   Barrel: {fileID: 8814564544386642732}

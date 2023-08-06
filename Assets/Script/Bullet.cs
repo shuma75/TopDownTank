@@ -9,6 +9,7 @@ public class Bullet : MonoBehaviourPunCallbacks
 {
     Rigidbody2D rb;
     Animator animator;
+    [SerializeField] float Speed;
 
     Tween delay;
     // Start is called before the first frame update
@@ -21,7 +22,7 @@ public class Bullet : MonoBehaviourPunCallbacks
             rb = GetComponent<Rigidbody2D>();
             animator = GetComponent<Animator>();
 
-            rb.velocity = transform.rotation * Vector2.up * 3;
+            rb.velocity = transform.rotation * Vector2.up * Speed;
             delay = DOVirtual.DelayedCall(2, () =>
             {
                 animator.SetBool("Exp", true);
@@ -34,7 +35,7 @@ public class Bullet : MonoBehaviourPunCallbacks
     {
         if(photonView.IsMine)
         {
-            if (collision.CompareTag("Object"))
+            if (collision.CompareTag("Object") || collision.CompareTag("Bullet"))
             {
                 delay.Complete(true);
             }

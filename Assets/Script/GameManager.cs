@@ -39,6 +39,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [SerializeField] private Text TimerText;
     [SerializeField] private Text CountDownText;
     [SerializeField] private Button EndButton;
+    [SerializeField] private Text Log;
 
     [SerializeField] private Transform RankParent;
     [SerializeField] private RankElement[] rankElement;
@@ -95,7 +96,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         CountDownText.text = "STRAT";
 
 
-        timer.Value = 30;
+        timer.Value = 60;
         inGame = true;
 
         while (timer.Value > 0)
@@ -174,5 +175,16 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         //StartCoroutine(LobbyManager.Instance.EndGameIE());
         SceneManager.UnloadSceneAsync("Game", UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
+    }
+
+    public void SetLog(string kill, string death)
+    {
+        photonView.RPC(nameof(SetLogRPC), RpcTarget.All, kill, death);
+    }
+
+    [PunRPC]
+    private void SetLogRPC(string kill, string death)
+    {
+        Log.text += "\n" + kill + "‚ª" + death + "‚ð“|‚µ‚½";
     }
 }

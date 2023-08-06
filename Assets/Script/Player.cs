@@ -141,6 +141,8 @@ public class Player : MonoBehaviourPunCallbacks
 
                     photonView.RPC(nameof(Kill), RpcTarget.All, owner.Owner);
                     photonView.RPC(nameof(Death), RpcTarget.All, photonView.Owner);
+
+                    GameManager.instance.SetLog(owner.Owner.NickName, photonView.Owner.NickName);
                 }
                 else
                 {
