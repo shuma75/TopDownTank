@@ -172,6 +172,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void EndGameRPC()
     {
-        StartCoroutine(LobbyManager.Instance.EndGameIE());
+        //StartCoroutine(LobbyManager.Instance.EndGameIE());
+        SceneManager.UnloadSceneAsync("Game", UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
     }
 }

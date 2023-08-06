@@ -16,7 +16,7 @@ public class Initialize : MonoBehaviourPunCallbacks
         // ランダムな座標に自身のアバター（ネットワークオブジェクト）を生成する
         var position = new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f));
         var localPlayer = PhotonNetwork.LocalPlayer;
-        PhotonNetwork.Instantiate("Player" + localPlayer.ActorNumber, position, Quaternion.identity);
+        PhotonNetwork.Instantiate("Player" + localPlayer.ActorNumber % 5, position, Quaternion.identity);
 
         if(PhotonNetwork.LocalPlayer.IsMasterClient) ChPl = new bool[PhotonNetwork.PlayerList.Length];
 
@@ -29,13 +29,14 @@ public class Initialize : MonoBehaviourPunCallbacks
         if (PhotonNetwork.LocalPlayer.IsMasterClient)
         {
             ChPl[id] = true;
+            Debug.Log(id);
 
             for(int i = 0; i < ChPl.Length; i++)
             {
                 if (!ChPl[i]) return;
             }
 
-            photonView.RPC(nameof(StartGame), RpcTarget.All);
+            photonView.RPC(nameof(StartGame), RpcTarget.AllViaServer);
         }
     }
 

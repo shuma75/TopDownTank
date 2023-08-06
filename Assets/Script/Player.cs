@@ -54,11 +54,9 @@ public class Player : MonoBehaviourPunCallbacks
                     heart[i].sprite = empty;
                 }
             }
-
-            transform.parent = GameManager.instance.transform;
-
             PlayerCamera.Priority = 100;
         }
+        transform.parent = GameManager.instance.transform;
     }
 
     // Update is called once per frame
