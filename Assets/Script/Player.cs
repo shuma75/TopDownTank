@@ -169,6 +169,7 @@ public class Player : MonoBehaviourPunCallbacks
                 heart[i].sprite = full;
             }
 
+            transform.position = new Vector3(Random.Range(-8f, 8f), Random.Range(-8f, 8f));
             player.SetBool("Death", false);
         }
     }
