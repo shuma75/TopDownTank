@@ -14,7 +14,7 @@ public class Initialize : MonoBehaviourPunCallbacks
         PhotonNetwork.IsMessageQueueRunning = true;
 
         // ランダムな座標に自身のアバター（ネットワークオブジェクト）を生成する
-        var position = new Vector3(Random.Range(-8f, 8f), Random.Range(-8f, 8f));
+        var position = new Vector3(Random.Range(-10f, 10f), Random.Range(-10f, 10f));
         var localPlayer = PhotonNetwork.LocalPlayer;
         PhotonNetwork.Instantiate("Player" + localPlayer.ActorNumber % 5, position, Quaternion.identity);
 
