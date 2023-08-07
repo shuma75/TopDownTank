@@ -40,19 +40,12 @@ public class Player : MonoBehaviourPunCallbacks
             shotable = true;
             muteki = false;
             transform.tag = "Player";
-            HP = 3;
+            HP = 5;
             canvas.SetActive(true);
             //forward.SetActive(true);
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 5; i++)
             {
-                if (i < HP)
-                {
-                    heart[i].sprite = full;
-                }
-                else
-                {
-                    heart[i].sprite = empty;
-                }
+                heart[i].sprite = full;
             }
             PlayerCamera.Priority = 100;
         }
@@ -122,7 +115,7 @@ public class Player : MonoBehaviourPunCallbacks
                 photonView.RPC(nameof(Hit), RpcTarget.All, owner.Owner);
                 HP--;
 
-                for(int i = 0;i < 3;i++)
+                for(int i = 0;i < 5;i++)
                 {
                     if(i < HP)
                     {
@@ -165,8 +158,8 @@ public class Player : MonoBehaviourPunCallbacks
     {
         if(photonView.IsMine)
         {
-            HP = 3;
-            for (int i = 0; i < 3; i++)
+            HP = 5;
+            for (int i = 0; i < 5; i++)
             {
                 heart[i].sprite = full;
             }
