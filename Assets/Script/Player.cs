@@ -10,13 +10,21 @@ using Cinemachine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class Player : MonoBehaviourPunCallbacks
 {
+    enum BulletKind
+    {
+        Normal,
+        Explosion,
+        Long
+    }
+
     Rigidbody2D rb;
 
     [SerializeField] float Speed;
     [SerializeField] float AngleSpeed;
-    [SerializeField] string BulletName;
+    [SerializeField] string[] BulletName;
 
-    [SerializeField] Transform Barrel;
+    [SerializeField] SpriteRenderer Barrel;
+    [SerializeField] Sprite[] Barrels;
     [SerializeField] Transform po;
     [SerializeField] Animator animator, player;
     [SerializeField] GameObject canvas;
@@ -24,10 +32,13 @@ public class Player : MonoBehaviourPunCallbacks
     [SerializeField] ParticleSystem tiya;
     [SerializeField] CinemachineVirtualCamera PlayerCamera;
 
+    [SerializeField] BulletKind kind;
+
     [SerializeField] Sprite full, empty;
     [SerializeField] Image[] heart;
 
     int HP;
+    int bullet;
     bool shotable, muteki;
     // Start is called before the first frame update
     void Start()
@@ -48,6 +59,7 @@ public class Player : MonoBehaviourPunCallbacks
                 heart[i].sprite = full;
             }
             PlayerCamera.Priority = 100;
+            bullet = int.MaxValue;
         }
         transform.parent = GameManager.instance.transform;
     }
@@ -77,18 +89,44 @@ public class Player : MonoBehaviourPunCallbacks
 
             float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg + 90f;
 
-            Barrel.DORotate(new Vector3(0, 0, angle), 0.1f);
+            Barrel.transform.DORotate(new Vector3(0, 0, angle), 0.1f);
 
             if (Input.GetMouseButtonDown(0) && shotable)
             {
-                PhotonNetwork.Instantiate(BulletName, po.position, Quaternion.Euler(0, 0, angle - 180f));
                 animator.SetBool("Shot", true);
                 shotable = false;
-                DOVirtual.DelayedCall(1, () =>
+
+                switch (kind)
                 {
-                    shotable = true;
-                    animator.SetBool("Shot", false);
-                });
+                    case BulletKind.Normal:
+                        PhotonNetwork.Instantiate(BulletName[0], po.position, Quaternion.Euler(0, 0, angle - 180f));
+
+                        DOVirtual.DelayedCall(0.5f, () =>
+                        {
+                            shotable = true;
+                        });
+                        break;
+                    case BulletKind.Explosion:
+                        PhotonNetwork.Instantiate(BulletName[1], po.position, Quaternion.Euler(0, 0, angle - 180f));
+
+                        DOVirtual.DelayedCall(1, () =>
+                        {
+                            shotable = true;
+                        });
+                        break;
+                    case BulletKind.Long:
+                        PhotonNetwork.Instantiate(BulletName[2], po.position, Quaternion.Euler(0, 0, angle - 180f));
+
+                        DOVirtual.DelayedCall(1.5f, () =>
+                        {
+                            shotable = true;
+                        });
+                        break;
+                }
+            }
+            else
+            {
+                animator.SetBool("Shot", false);
             }
 
 
@@ -107,13 +145,23 @@ public class Player : MonoBehaviourPunCallbacks
     {
         if (photonView.IsMine)
         {
-            if (collision.CompareTag("Bullet") && !muteki)
+            if (collision.CompareTag("Bullet") || collision.CompareTag("Bullet1") || collision.CompareTag("Bullet2"))
             {
-                
-                Debug.LogWarning("hit!!");
+                if (muteki) return;
                 var owner = collision.GetComponent<PhotonView>();
                 photonView.RPC(nameof(Hit), RpcTarget.All, owner.Owner);
-                HP--;
+                switch (collision.tag)
+                {
+                    case "Bullet":
+                        HP -= 2;
+                        break;
+                    case "Bullet1":
+                        HP--;
+                        break;
+                    case "Bullet2":
+                        HP -= 3;
+                        break;
+                }
 
                 for(int i = 0;i < 5;i++)
                 {
@@ -127,7 +175,7 @@ public class Player : MonoBehaviourPunCallbacks
                     }
                 }
 
-                if (HP == 0)
+                if (HP <= 0)
                 {
                     player.SetBool("Death", true);
                     DOVirtual.DelayedCall(3, () =>ReSpawn());
@@ -140,8 +188,32 @@ public class Player : MonoBehaviourPunCallbacks
                 else
                 {
                     muteki = true;
-                    DOVirtual.DelayedCall(0.5f, ()=>muteki = false);
+                    DOVirtual.DelayedCall(0.4f, ()=>muteki = false);
                 }
+            }
+            else if (collision.CompareTag("Nor"))
+            {
+                kind = BulletKind.Normal;
+                DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 5, 1).SetEase(Ease.InOutExpo);
+                Barrel.sprite = Barrels[0];
+                bullet = int.MaxValue;
+                PhotonNetwork.Destroy(collision.gameObject);
+            }
+            else if (collision.CompareTag("Exp"))
+            {
+                kind = BulletKind.Explosion;
+                DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 5, 1).SetEase(Ease.InOutExpo);
+                Barrel.sprite = Barrels[1];
+                bullet = 15;
+                PhotonNetwork.Destroy(collision.gameObject);
+            }
+            else if (collision.CompareTag("Lon"))
+            {
+                kind = BulletKind.Long;
+                DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 10, 1).SetEase(Ease.InOutExpo);
+                Barrel.sprite = Barrels[2];
+                bullet = 10;
+                PhotonNetwork.Destroy(collision.gameObject);
             }
         }
     }
@@ -166,6 +238,8 @@ public class Player : MonoBehaviourPunCallbacks
 
             transform.position = new Vector3(Random.Range(-8, 8), Random.Range(-8, 8));
             player.SetBool("Death", false);
+            muteki = true;
+            DOVirtual.DelayedCall(1, ()=>muteki = false);
         }
     }
 

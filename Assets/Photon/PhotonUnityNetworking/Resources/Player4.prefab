@@ -207,8 +207,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -50, y: 0}
-  m_SizeDelta: {x: 50, y: 50}
+  m_AnchoredPosition: {x: -75, y: 0}
+  m_SizeDelta: {x: 75, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5813139688776762490
 CanvasRenderer:
@@ -283,8 +283,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -25, y: 0}
-  m_SizeDelta: {x: 50, y: 50}
+  m_AnchoredPosition: {x: -37.5, y: 0}
+  m_SizeDelta: {x: 75, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6879771576866956659
 CanvasRenderer:
@@ -407,7 +407,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -318.5, y: 199.93}
+  m_AnchoredPosition: {x: -293.6, y: 196.1}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &4182019688408663279
@@ -550,8 +550,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 50, y: 0}
-  m_SizeDelta: {x: 50, y: 50}
+  m_AnchoredPosition: {x: 75, y: 0}
+  m_SizeDelta: {x: 75, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5923211724006399056
 CanvasRenderer:
@@ -627,7 +627,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 50, y: 50}
+  m_SizeDelta: {x: 75, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &115033216206843301
 CanvasRenderer:
@@ -786,8 +786,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 25, y: 0}
-  m_SizeDelta: {x: 50, y: 50}
+  m_AnchoredPosition: {x: 37.5, y: 0}
+  m_SizeDelta: {x: 75, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &239625653293606299
 CanvasRenderer:
@@ -1062,7 +1062,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: c966bd02f59259e4eb303ecd83830ed4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8f13dd56ea99ad749acffea2b61addaa, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1222,8 +1222,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Speed: 1
   AngleSpeed: 45
-  BulletName: bullet4
-  Barrel: {fileID: 8814564544386642732}
+  BulletName:
+  - Nobullet4
+  - Exbullet4
+  - Lobullet4
+  Barrel: {fileID: 8814564544386642733}
+  Barrels:
+  - {fileID: 21300000, guid: 8f13dd56ea99ad749acffea2b61addaa, type: 3}
+  - {fileID: 21300000, guid: c966bd02f59259e4eb303ecd83830ed4, type: 3}
+  - {fileID: 21300000, guid: a3fdbf01038bde4498445d063dbe7717, type: 3}
   po: {fileID: 8814564543396354153}
   animator: {fileID: 8814564543414135618}
   player: {fileID: 0}
@@ -1231,6 +1238,7 @@ MonoBehaviour:
   forward: {fileID: 7333607933341925276}
   tiya: {fileID: 855902377573431959}
   PlayerCamera: {fileID: 2884967629195289418}
+  kind: 0
   full: {fileID: 21300000, guid: 436fbbdd674d08843a0d2139fcbed431, type: 3}
   empty: {fileID: 21300000, guid: c3b2eee0cec069e47957a4b466f71aff, type: 3}
   heart:

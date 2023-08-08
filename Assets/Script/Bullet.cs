@@ -10,6 +10,8 @@ public class Bullet : MonoBehaviourPunCallbacks
     Rigidbody2D rb;
     Animator animator;
     [SerializeField] float Speed;
+    [SerializeField] float LifeTime;
+    [SerializeField] bool isBreak;
 
     Tween delay;
     // Start is called before the first frame update
@@ -23,7 +25,7 @@ public class Bullet : MonoBehaviourPunCallbacks
             animator = GetComponent<Animator>();
 
             rb.velocity = transform.rotation * Vector2.up * Speed;
-            delay = DOVirtual.DelayedCall(2, () =>
+            delay = DOVirtual.DelayedCall(LifeTime, () =>
             {
                 animator.SetBool("Exp", true);
                 rb.velocity = Vector2.zero;
@@ -35,7 +37,8 @@ public class Bullet : MonoBehaviourPunCallbacks
     {
         if(photonView.IsMine)
         {
-            if (collision.CompareTag("Object") || collision.CompareTag("Bullet"))
+            bool a = collision.CompareTag("Bullet") && isBreak;
+            if (collision.CompareTag("Object") || a)
             {
                 delay.Complete(true);
             }

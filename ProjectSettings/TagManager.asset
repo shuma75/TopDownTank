@@ -6,6 +6,11 @@ TagManager:
   tags:
   - Bullet
   - Object
+  - Bullet1
+  - Bullet2
+  - Nor
+  - Exp
+  - Lon
   layers:
   - Default
   - TransparentFX
