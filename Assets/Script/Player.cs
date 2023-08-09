@@ -36,6 +36,8 @@ public class Player : MonoBehaviourPunCallbacks
 
     [SerializeField] Sprite full, empty;
     [SerializeField] Image[] heart;
+    [SerializeField] GameObject[] Bullets;
+    [SerializeField] Text Count;
 
     int HP;
     int bullet;
