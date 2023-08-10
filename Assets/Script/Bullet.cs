@@ -38,7 +38,7 @@ public class Bullet : MonoBehaviourPunCallbacks
         if(photonView.IsMine)
         {
             bool a = collision.CompareTag("Bullet") && isBreak;
-            if (collision.CompareTag("Object") || a)
+            if (collision.CompareTag("Object") || collision.CompareTag("Enemy") || a)
             {
                 delay.Complete(true);
             }

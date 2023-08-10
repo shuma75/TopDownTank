@@ -62,17 +62,30 @@ public class GameManager : MonoBehaviourPunCallbacks
             TimerText.text = x.ToString();
         }).AddTo(this);
 
+        List<string> nameList = new List<string>();
+        List<int> killList = new List<int>();
+
+        var sort = playerScore.OrderByDescending(x => x.kill);
+
+        foreach (PlayerScore data in sort)
+        {
+            nameList.Add(PhotonNetwork.PlayerList[data.id].NickName);
+            killList.Add(data.kill);
+        }
+
+        photonView.RPC(nameof(ReloadRanking), RpcTarget.All, nameList.ToArray(), killList.ToArray());
+
         StartCoroutine(Timer());
     }
 
-    public void SetHitCount(Photon.Realtime.Player player)
+    public void SetHitCount(int player)
     {
-        playerScore[player.ActorNumber - 1].hit++;
+        playerScore[player - 1].hit++;
     }
 
-    public void SetKillCount(Photon.Realtime.Player player)
+    public void SetKillCount(int player)
     {
-        playerScore[player.ActorNumber-1].kill++;
+        playerScore[player - 1].kill++;
 
         List<string> nameList = new List<string>();
         List<int> killList = new List<int>();
@@ -88,9 +101,9 @@ public class GameManager : MonoBehaviourPunCallbacks
         ReloadRanking(nameList.ToArray(), killList.ToArray());
     }
 
-    public void SetDeathCount(Photon.Realtime.Player player)
+    public void SetDeathCount(int player)
     {
-        playerScore[player.ActorNumber - 1].death++;
+        playerScore[player - 1].death++;
     }
 
     IEnumerator Timer()

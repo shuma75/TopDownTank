@@ -11,6 +11,7 @@ TagManager:
   - Nor
   - Exp
   - Lon
+  - Enemy
   layers:
   - Default
   - TransparentFX

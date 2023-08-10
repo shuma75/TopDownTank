@@ -1195,7 +1195,7 @@ GameObject:
   - component: {fileID: 7025802462482647352}
   m_Layer: 0
   m_Name: Player0
-  m_TagString: Object
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1332,6 +1332,8 @@ MonoBehaviour:
   - {fileID: 780163166937418523}
   - {fileID: 5439686382926250105}
   - {fileID: 9135173068588018118}
+  Bullets: []
+  Count: {fileID: 0}
 --- !u!61 &8814564544742363272
 BoxCollider2D:
   m_ObjectHideFlags: 0

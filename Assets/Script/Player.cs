@@ -132,7 +132,7 @@ public class Player : MonoBehaviourPunCallbacks
                             });
                             break;
                         }
-                        Count.text = bullet.ToString();
+                        Count.text = "Å~" + bullet.ToString();
 
                         DOVirtual.DelayedCall(1, () =>
                         {
@@ -161,7 +161,7 @@ public class Player : MonoBehaviourPunCallbacks
                             });
                             break;
                         }
-                        Count.text = bullet.ToString();
+                        Count.text = "Å~" + bullet.ToString();
 
                         DOVirtual.DelayedCall(1.5f, () =>
                         {
@@ -196,7 +196,7 @@ public class Player : MonoBehaviourPunCallbacks
             {
                 if (muteki) return;
                 var owner = collision.GetComponent<PhotonView>();
-                photonView.RPC(nameof(Hit), RpcTarget.All, owner.Owner);
+                photonView.RPC(nameof(Hit), RpcTarget.All, owner.Owner.ActorNumber);
                 switch (collision.tag)
                 {
                     case "Bullet":
@@ -227,8 +227,8 @@ public class Player : MonoBehaviourPunCallbacks
                     player.SetBool("Death", true);
                     DOVirtual.DelayedCall(3, () =>ReSpawn());
 
-                    photonView.RPC(nameof(Kill), RpcTarget.All, owner.Owner);
-                    photonView.RPC(nameof(Death), RpcTarget.All, photonView.Owner);
+                    photonView.RPC(nameof(Kill), RpcTarget.All, owner.Owner.ActorNumber);
+                    photonView.RPC(nameof(Death), RpcTarget.All, photonView.Owner.ActorNumber);
 
                     GameManager.instance.SetLog(owner.Owner.NickName, photonView.Owner.NickName);
                 }
@@ -251,7 +251,6 @@ public class Player : MonoBehaviourPunCallbacks
                 Barrel.sprite = Barrels[0];
                 bullet = int.MaxValue;
                 Count.text = "Å~Åá";
-                photonView.RPC(nameof(DestroyObject), RpcTarget.All, collision.gameObject);
             }
             else if (collision.CompareTag("Exp"))
             {
@@ -266,7 +265,6 @@ public class Player : MonoBehaviourPunCallbacks
                 Barrel.sprite = Barrels[1];
                 bullet = 15;
                 Count.text = bullet.ToString();
-                photonView.RPC(nameof(DestroyObject), RpcTarget.All, collision.gameObject);
             }
             else if (collision.CompareTag("Lon"))
             {
@@ -281,14 +279,8 @@ public class Player : MonoBehaviourPunCallbacks
                 Barrel.sprite = Barrels[2];
                 bullet = 10;
                 Count.text = bullet.ToString();
-                photonView.RPC(nameof(DestroyObject), RpcTarget.All, collision.gameObject);
             }
         }
-    }
-
-    private void DestroyObject(GameObject a)
-    {
-        Destroy(a);
     }
 
     public void ReSpawn()
@@ -309,19 +301,19 @@ public class Player : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    private void Hit(Photon.Realtime.Player player)
+    private void Hit(int player)
     {
         GameManager.instance.SetHitCount(player);
     }
 
     [PunRPC]
-    private void Kill(Photon.Realtime.Player player)
+    private void Kill(int player)
     {
         GameManager.instance.SetKillCount(player);
     }
 
     [PunRPC]
-    private void Death(Photon.Realtime.Player player)
+    private void Death(int player)
     {
         GameManager.instance.SetDeathCount(player);
     }
