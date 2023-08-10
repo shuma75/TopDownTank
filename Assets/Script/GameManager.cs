@@ -40,6 +40,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     [SerializeField] private Text CountDownText;
     [SerializeField] private Button EndButton;
     [SerializeField] private Text Log;
+    [SerializeField] private Transform LogParent;
+    [SerializeField] private RankElement[] rankElements;
 
     [SerializeField] private Transform RankParent;
     [SerializeField] private RankElement[] rankElement;
@@ -71,6 +73,19 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void SetKillCount(Photon.Realtime.Player player)
     {
         playerScore[player.ActorNumber-1].kill++;
+
+        List<string> nameList = new List<string>();
+        List<int> killList = new List<int>();
+
+        var sort = playerScore.OrderByDescending(x => x.kill);
+
+        foreach (PlayerScore data in sort)
+        {
+            nameList.Add(PhotonNetwork.PlayerList[data.id].NickName);
+            killList.Add(data.kill);
+        }
+
+        ReloadRanking(nameList.ToArray(), killList.ToArray());
     }
 
     public void SetDeathCount(Photon.Realtime.Player player)
@@ -138,12 +153,6 @@ public class GameManager : MonoBehaviourPunCallbacks
                 killList.Add(data.kill);
             }
 
-            for(int i = 0;i < nameList.Count; i++)
-            {
-                Debug.Log(nameList[i]);
-                Debug.Log(killList[i]);
-            }
-
             photonView.RPC(nameof(ShowResult), RpcTarget.All, nameList.ToArray(), killList.ToArray());
         }
     }
@@ -162,6 +171,21 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
+    [PunRPC]
+    private void ReloadRanking(string[] nameList, int[] killList)
+    {
+        foreach (RankElement x in rankElements)
+        {
+            x.gameObject.SetActive(false);
+        }
+
+        for (int i = 0; i < nameList.Length; i++)
+        {
+            rankElements[i].gameObject.SetActive(true);
+            rankElements[i].SetData(nameList[i], killList[i]);
+        }
+    }
+    
     private void EndGame()
     {
         if (PhotonNetwork.LocalPlayer.IsMasterClient)
@@ -185,6 +209,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void SetLogRPC(string kill, string death)
     {
-        Log.text += "\n" + kill + "‚ª" + death + "‚ð“|‚µ‚½";
+        Text a = Instantiate(Log, LogParent);
+        a.transform.SetAsFirstSibling();
+        a.text = kill + "‚ª" + death + "‚ð“|‚µ‚½";
     }
 }

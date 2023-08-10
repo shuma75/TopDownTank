@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4773285599822383284
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1247,6 +1247,8 @@ MonoBehaviour:
   - {fileID: 780163166937418523}
   - {fileID: 4242522960649476688}
   - {fileID: 2958792805235688005}
+  Bullets: []
+  Count: {fileID: 0}
 --- !u!61 &8814564544742363272
 BoxCollider2D:
   m_ObjectHideFlags: 0

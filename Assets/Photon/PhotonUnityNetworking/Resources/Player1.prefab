@@ -2043,7 +2043,10 @@ MonoBehaviour:
   - {fileID: 780163166937418523}
   - {fileID: 2956838064264941425}
   - {fileID: 2046570121146899891}
-  Bullets: []
+  Bullets:
+  - {fileID: 2406136411572131848}
+  - {fileID: 8409487268616139837}
+  - {fileID: 7456840687375620311}
   Count: {fileID: 0}
 --- !u!61 &8814564544742363272
 BoxCollider2D:

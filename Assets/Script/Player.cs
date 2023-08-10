@@ -71,6 +71,7 @@ public class Player : MonoBehaviourPunCallbacks
     {
         if(photonView.IsMine && HP > 0 && GameManager.instance.inGame)
         {
+            if(muteki)DOVirtual.DelayedCall(0.4f,()=>muteki = false);
             var Vertical = Input.GetAxis("Vertical");
             var Horizontal = Input.GetAxis("Horizontal");
 
@@ -80,7 +81,7 @@ public class Player : MonoBehaviourPunCallbacks
             }
             else
             {
-                tiya.Pause();
+                tiya.Stop();
             }
 
             rb.velocity = transform.rotation * new Vector2(0, -Vertical * Speed);
@@ -110,6 +111,28 @@ public class Player : MonoBehaviourPunCallbacks
                         break;
                     case BulletKind.Explosion:
                         PhotonNetwork.Instantiate(BulletName[1], po.position, Quaternion.Euler(0, 0, angle - 180f));
+                        bullet--;
+                        if(bullet <= 0)
+                        {
+                            foreach (GameObject x in Bullets)
+                            {
+                                x.SetActive(false);
+                            }
+                            Bullets[0].SetActive(true);
+
+                            kind = BulletKind.Normal;
+                            DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 5, 1).SetEase(Ease.InOutExpo);
+                            Barrel.sprite = Barrels[0];
+                            bullet = int.MaxValue;
+                            Count.text = "~‡";
+
+                            DOVirtual.DelayedCall(0.5f, () =>
+                            {
+                                shotable = true;
+                            });
+                            break;
+                        }
+                        Count.text = bullet.ToString();
 
                         DOVirtual.DelayedCall(1, () =>
                         {
@@ -118,6 +141,27 @@ public class Player : MonoBehaviourPunCallbacks
                         break;
                     case BulletKind.Long:
                         PhotonNetwork.Instantiate(BulletName[2], po.position, Quaternion.Euler(0, 0, angle - 180f));
+                        if (bullet <= 0)
+                        {
+                            foreach (GameObject x in Bullets)
+                            {
+                                x.SetActive(false);
+                            }
+                            Bullets[0].SetActive(true);
+
+                            kind = BulletKind.Normal;
+                            DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 5, 1).SetEase(Ease.InOutExpo);
+                            Barrel.sprite = Barrels[0];
+                            bullet = int.MaxValue;
+                            Count.text = "~‡";
+
+                            DOVirtual.DelayedCall(0.5f, () =>
+                            {
+                                shotable = true;
+                            });
+                            break;
+                        }
+                        Count.text = bullet.ToString();
 
                         DOVirtual.DelayedCall(1.5f, () =>
                         {
@@ -138,6 +182,7 @@ public class Player : MonoBehaviourPunCallbacks
         {
             rb.velocity = Vector2.zero;
             rb.angularVelocity = 0;
+            muteki = true;
         }
 
         tiya.startRotation = -transform.eulerAngles.z * Mathf.Deg2Rad;
@@ -195,37 +240,55 @@ public class Player : MonoBehaviourPunCallbacks
             }
             else if (collision.CompareTag("Nor"))
             {
+                foreach(GameObject x in Bullets)
+                {
+                    x.SetActive(false);
+                }
+                Bullets[0].SetActive(true);
+
                 kind = BulletKind.Normal;
                 DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 5, 1).SetEase(Ease.InOutExpo);
                 Barrel.sprite = Barrels[0];
                 bullet = int.MaxValue;
-                PhotonNetwork.Destroy(collision.gameObject);
+                Count.text = "~‡";
+                photonView.RPC(nameof(DestroyObject), RpcTarget.All, collision.gameObject);
             }
             else if (collision.CompareTag("Exp"))
             {
+                foreach (GameObject x in Bullets)
+                {
+                    x.SetActive(false);
+                }
+                Bullets[1].SetActive(true);
+
                 kind = BulletKind.Explosion;
                 DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 5, 1).SetEase(Ease.InOutExpo);
                 Barrel.sprite = Barrels[1];
                 bullet = 15;
-                PhotonNetwork.Destroy(collision.gameObject);
+                Count.text = bullet.ToString();
+                photonView.RPC(nameof(DestroyObject), RpcTarget.All, collision.gameObject);
             }
             else if (collision.CompareTag("Lon"))
             {
+                foreach (GameObject x in Bullets)
+                {
+                    x.SetActive(false);
+                }
+                Bullets[2].SetActive(true);
+
                 kind = BulletKind.Long;
                 DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 10, 1).SetEase(Ease.InOutExpo);
                 Barrel.sprite = Barrels[2];
                 bullet = 10;
-                PhotonNetwork.Destroy(collision.gameObject);
+                Count.text = bullet.ToString();
+                photonView.RPC(nameof(DestroyObject), RpcTarget.All, collision.gameObject);
             }
         }
     }
 
-    public void DestroyObject()
+    private void DestroyObject(GameObject a)
     {
-        if (photonView.IsMine)
-        {
-            Destroy(gameObject);
-        }
+        Destroy(a);
     }
 
     public void ReSpawn()
