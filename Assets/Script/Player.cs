@@ -22,6 +22,7 @@ public class Player : MonoBehaviourPunCallbacks
     [SerializeField] float Speed;
     [SerializeField] float AngleSpeed;
     [SerializeField] string[] BulletName;
+    [SerializeField] string MineName;
 
     [SerializeField] SpriteRenderer Barrel;
     [SerializeField] Sprite[] Barrels;
@@ -41,7 +42,7 @@ public class Player : MonoBehaviourPunCallbacks
 
     int HP;
     int bullet;
-    bool shotable, muteki;
+    bool shotable, subable, muteki;
     // Start is called before the first frame update
     void Start()
     {
@@ -51,6 +52,7 @@ public class Player : MonoBehaviourPunCallbacks
             player = GetComponent<Animator>();
             
             shotable = true;
+            subable = true;
             muteki = false;
             transform.tag = "Player";
             HP = 5;
@@ -175,6 +177,13 @@ public class Player : MonoBehaviourPunCallbacks
                 animator.SetBool("Shot", false);
             }
 
+            if (Input.GetMouseButtonDown(1) && subable)
+            {
+                subable = false;
+                PhotonNetwork.Instantiate(MineName, transform.position, Quaternion.Euler(0, 0, angle - 180f));
+                DOVirtual.DelayedCall(1,()=> subable = true);
+            }
+
 
         }
         
@@ -264,7 +273,7 @@ public class Player : MonoBehaviourPunCallbacks
                 DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 5, 1).SetEase(Ease.InOutExpo);
                 Barrel.sprite = Barrels[1];
                 bullet = 15;
-                Count.text = bullet.ToString();
+                Count.text = "Å~" + bullet.ToString();
             }
             else if (collision.CompareTag("Lon"))
             {
@@ -278,7 +287,7 @@ public class Player : MonoBehaviourPunCallbacks
                 DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 10, 1).SetEase(Ease.InOutExpo);
                 Barrel.sprite = Barrels[2];
                 bullet = 10;
-                Count.text = bullet.ToString();
+                Count.text = "Å~" + bullet.ToString();
             }
         }
     }

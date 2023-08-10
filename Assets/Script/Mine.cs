@@ -11,6 +11,7 @@ public class Mine : MonoBehaviourPunCallbacks
     void Start()
     {
         animator = GetComponent<Animator>();
+        transform.parent = GameManager.instance.transform;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

@@ -10,6 +10,7 @@ using DG.Tweening;
 public class SubWeapinHP : MonoBehaviourPunCallbacks
 {
     [SerializeField] private int HP;
+    [SerializeField] private GameObject chi;
 
     private SpriteRenderer spriteRenderer;
     private Animator animator;
@@ -18,6 +19,12 @@ public class SubWeapinHP : MonoBehaviourPunCallbacks
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+
+        if(photonView.IsMine)
+        {
+            if (chi != null) chi.tag = "Player";
+            gameObject.tag = "Player";
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
