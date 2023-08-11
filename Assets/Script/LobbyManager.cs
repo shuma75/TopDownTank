@@ -43,9 +43,11 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     [SerializeField] Button GameStartButton;
     [SerializeField] Button LoQuitButton;
     [SerializeField] Button LoOptionButton;
+    [SerializeField] Text LobbyName;
     [SerializeField] Text[] PlayerName;
     [Header("オプション")]
     [SerializeField] Button CreditButton;
+    [SerializeField] Button OpBackButton;
     [Header("クレジット")]
     [SerializeField] Button BackButton;
     // Start is called before the first frame update
@@ -62,6 +64,10 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         });
         GameStartButton.onClick.AddListener(()=>StartGame());
         LoQuitButton.onClick.AddListener(()=>PhotonNetwork.LeaveRoom());
+        OptionButton.onClick.AddListener(() => Option.Priority = 50);
+        LoOptionButton.onClick.AddListener(() => Option.Priority = 50);
+        LiOptionButton.onClick.AddListener(() => Option.Priority = 50);
+        OpBackButton.onClick.AddListener(()=>Option.Priority = 0);
     }
 
     private void GameStart()
@@ -123,6 +129,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         Lobby.Priority = 15;
 
         SetMenberList();
+        LobbyName.text = PhotonNetwork.CurrentRoom.Name;
     }
 
     public override void OnLeftRoom()

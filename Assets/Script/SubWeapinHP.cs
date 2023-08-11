@@ -19,6 +19,7 @@ public class SubWeapinHP : MonoBehaviourPunCallbacks
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+        transform.parent = GameManager.instance.transform;
 
         if(photonView.IsMine)
         {

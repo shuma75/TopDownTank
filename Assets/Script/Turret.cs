@@ -8,17 +8,21 @@ using DG.Tweening;
 public class Turret : MonoBehaviourPunCallbacks
 {
     [SerializeField] Transform Barrel,po;
-
+    [SerializeField] string BulletName;
+    [SerializeField] Animator animator;
     [SerializeField] List<Transform> target;
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(Attack());
+        if (photonView.IsMine)
+        {
+            StartCoroutine(Attack());
+        }
     }
 
     private void Update()
     {
-        if(target.Count > 0)
+        if(photonView.IsMine && target.Count > 0)
         {
             Vector2 lookDir = target[0].position - transform.position;
 
@@ -32,7 +36,18 @@ public class Turret : MonoBehaviourPunCallbacks
     {
         while (true)
         {
-            yield return new WaitForSeconds(1);
+            if(!GameManager.instance.inGame)break;
+            yield return new WaitForSeconds(2);
+
+            if(target.Count > 0 )
+            {
+                Vector2 lookDir = target[0].position - transform.position;
+
+                float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg + 90f;
+                PhotonNetwork.Instantiate(BulletName, po.position, Quaternion.Euler(0, 0, angle - 180f));
+                animator.SetBool("Shot", true);
+                DOVirtual.DelayedCall(1, () => animator.SetBool("Shot", false));
+            }
         }
     }
 
@@ -40,7 +55,7 @@ public class Turret : MonoBehaviourPunCallbacks
     {
         if (photonView.IsMine)
         {
-            if (collision.CompareTag("Player"))
+            if (collision.CompareTag("Enemy"))
             {
                 target.Add(collision.transform);
             }

@@ -46,7 +46,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     [SerializeField] private Transform RankParent;
     [SerializeField] private RankElement[] rankElement;
 
+    [SerializeField] private Transform[] Res;
+
     public bool inGame;
+
+    public Player local;
     // Start is called before the first frame update
     void Start()
     {
@@ -99,6 +103,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
 
         ReloadRanking(nameList.ToArray(), killList.ToArray());
+
+        if(PhotonNetwork.LocalPlayer.ActorNumber == player)
+        {
+            local.SetTrophy();
+        }
     }
 
     public void SetDeathCount(int player)
@@ -124,7 +133,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         CountDownText.text = "STRAT";
 
 
-        timer.Value = 60;
+        timer.Value = 300;
         inGame = true;
 
         while (timer.Value > 0)
@@ -225,5 +234,17 @@ public class GameManager : MonoBehaviourPunCallbacks
         Text a = Instantiate(Log, LogParent);
         a.transform.SetAsFirstSibling();
         a.text = kill + "‚ª" + death + "‚ð“|‚µ‚½";
+    }
+
+    public Transform ResPosi(int a)
+    {
+        if(a < 0)
+        {
+            return Res[Random.Range(0, Res.Length)];
+        }
+        else
+        {
+            return Res[a];
+        }
     }
 }

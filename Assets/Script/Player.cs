@@ -22,7 +22,7 @@ public class Player : MonoBehaviourPunCallbacks
     [SerializeField] float Speed;
     [SerializeField] float AngleSpeed;
     [SerializeField] string[] BulletName;
-    [SerializeField] string MineName;
+    [SerializeField] string[] SubName;
 
     [SerializeField] SpriteRenderer Barrel;
     [SerializeField] Sprite[] Barrels;
@@ -38,10 +38,16 @@ public class Player : MonoBehaviourPunCallbacks
     [SerializeField] Sprite full, empty;
     [SerializeField] Image[] heart;
     [SerializeField] GameObject[] Bullets;
+    [SerializeField] GameObject[] Subs;
     [SerializeField] Text Count;
+    [SerializeField] Text SubCount;
+    [SerializeField] Text[] Discription;
+    [SerializeField] DiscriptionData data;
+    [SerializeField] Transform Trophy;
+    [SerializeField] GameObject trophy;
 
     int HP;
-    int bullet;
+    int bullet, subcount;
     bool shotable, subable, muteki;
     // Start is called before the first frame update
     void Start()
@@ -50,6 +56,11 @@ public class Player : MonoBehaviourPunCallbacks
         {
             rb = GetComponent<Rigidbody2D>();
             player = GetComponent<Animator>();
+            Transform a = GameManager.instance.ResPosi(photonView.Owner.ActorNumber - 1);
+            transform.position = a.position;
+            transform.rotation = a.rotation;
+
+            GameManager.instance.local = this;
             
             shotable = true;
             subable = true;
@@ -64,6 +75,14 @@ public class Player : MonoBehaviourPunCallbacks
             }
             PlayerCamera.Priority = 100;
             bullet = int.MaxValue;
+            subcount = 2;
+            Count.text = "Å~Åá";
+            SubCount.text = "Å~" + subcount;
+
+            Discription[0].text = data.MainName[0];
+            Discription[1].text = data.SubName[0];
+            Discription[2].text = data.MainDiscription[0];
+            Discription[3].text = data.SubDiscription[0];
         }
         transform.parent = GameManager.instance.transform;
     }
@@ -96,7 +115,7 @@ public class Player : MonoBehaviourPunCallbacks
 
             Barrel.transform.DORotate(new Vector3(0, 0, angle), 0.1f);
 
-            if (Input.GetMouseButtonDown(0) && shotable)
+            if (Input.GetMouseButtonDown(0) && shotable && bullet > 0)
             {
                 animator.SetBool("Shot", true);
                 shotable = false;
@@ -116,17 +135,21 @@ public class Player : MonoBehaviourPunCallbacks
                         bullet--;
                         if(bullet <= 0)
                         {
-                            foreach (GameObject x in Bullets)
+                            for (int i = 0; i < Bullets.Length; i++)
                             {
-                                x.SetActive(false);
+                                Bullets[i].SetActive(false);
+                                Subs[i].SetActive(false);
                             }
                             Bullets[0].SetActive(true);
+                            Subs[0].SetActive(true);
 
                             kind = BulletKind.Normal;
                             DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 5, 1).SetEase(Ease.InOutExpo);
                             Barrel.sprite = Barrels[0];
                             bullet = int.MaxValue;
+                            subcount = 2;
                             Count.text = "Å~Åá";
+                            SubCount.text = "Å~" + subcount;
 
                             DOVirtual.DelayedCall(0.5f, () =>
                             {
@@ -143,19 +166,24 @@ public class Player : MonoBehaviourPunCallbacks
                         break;
                     case BulletKind.Long:
                         PhotonNetwork.Instantiate(BulletName[2], po.position, Quaternion.Euler(0, 0, angle - 180f));
+                        bullet--;
                         if (bullet <= 0)
                         {
-                            foreach (GameObject x in Bullets)
+                            for (int i = 0; i < Bullets.Length; i++)
                             {
-                                x.SetActive(false);
+                                Bullets[i].SetActive(false);
+                                Subs[i].SetActive(false);
                             }
                             Bullets[0].SetActive(true);
+                            Subs[0].SetActive(true);
 
                             kind = BulletKind.Normal;
                             DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 5, 1).SetEase(Ease.InOutExpo);
                             Barrel.sprite = Barrels[0];
                             bullet = int.MaxValue;
+                            subcount = 2;
                             Count.text = "Å~Åá";
+                            SubCount.text = "Å~" + subcount;
 
                             DOVirtual.DelayedCall(0.5f, () =>
                             {
@@ -177,10 +205,27 @@ public class Player : MonoBehaviourPunCallbacks
                 animator.SetBool("Shot", false);
             }
 
-            if (Input.GetMouseButtonDown(1) && subable)
+            if (Input.GetMouseButtonDown(1) && subable && subcount > 0)
             {
                 subable = false;
-                PhotonNetwork.Instantiate(MineName, transform.position, Quaternion.Euler(0, 0, angle - 180f));
+                switch (kind)
+                {
+                    case BulletKind.Normal:
+                        PhotonNetwork.Instantiate(SubName[0], transform.position, Quaternion.Euler(0, 0, angle - 180f));
+                        subcount--;
+                        SubCount.text = "Å~" + subcount;
+                        break;
+                    case BulletKind.Explosion:
+                        PhotonNetwork.Instantiate(SubName[1], transform.position, Quaternion.Euler(0, 0, angle - 180f));
+                        subcount--;
+                        SubCount.text = "Å~" + subcount;
+                        break;
+                    case BulletKind.Long:
+                        PhotonNetwork.Instantiate(SubName[2], transform.position, Quaternion.Euler(0, 0, angle - 180f));
+                        subcount--;
+                        SubCount.text = "Å~" + subcount;
+                        break;
+                }
                 DOVirtual.DelayedCall(1,()=> subable = true);
             }
 
@@ -247,48 +292,78 @@ public class Player : MonoBehaviourPunCallbacks
                     DOVirtual.DelayedCall(0.4f, ()=>muteki = false);
                 }
             }
-            else if (collision.CompareTag("Nor"))
-            {
-                foreach(GameObject x in Bullets)
-                {
-                    x.SetActive(false);
-                }
-                Bullets[0].SetActive(true);
+        }
 
-                kind = BulletKind.Normal;
-                DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 5, 1).SetEase(Ease.InOutExpo);
-                Barrel.sprite = Barrels[0];
-                bullet = int.MaxValue;
-                Count.text = "Å~Åá";
-            }
-            else if (collision.CompareTag("Exp"))
+        if (collision.CompareTag("Nor"))
+        {
+            for (int i = 0; i < Bullets.Length; i++)
             {
-                foreach (GameObject x in Bullets)
-                {
-                    x.SetActive(false);
-                }
-                Bullets[1].SetActive(true);
-
-                kind = BulletKind.Explosion;
-                DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 5, 1).SetEase(Ease.InOutExpo);
-                Barrel.sprite = Barrels[1];
-                bullet = 15;
-                Count.text = "Å~" + bullet.ToString();
+                Bullets[i].SetActive(false);
+                Subs[i].SetActive(false);
             }
-            else if (collision.CompareTag("Lon"))
+            Bullets[0].SetActive(true);
+            Subs[0].SetActive(true);
+
+            kind = BulletKind.Normal;
+            DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 5, 1).SetEase(Ease.InOutExpo);
+            Barrel.sprite = Barrels[0];
+            bullet = int.MaxValue;
+            subcount = 2;
+            Count.text = "Å~Åá";
+            SubCount.text = "Å~" + subcount;
+            Discription[0].text = data.MainName[0];
+            Discription[1].text = data.SubName[0];
+            Discription[2].text = data.MainDiscription[0];
+            Discription[3].text = data.SubDiscription[0];
+            Destroy(collision.gameObject);
+        }
+        else if (collision.CompareTag("Exp"))
+        {
+            for(int i = 0; i < Bullets.Length; i++)
             {
-                foreach (GameObject x in Bullets)
-                {
-                    x.SetActive(false);
-                }
-                Bullets[2].SetActive(true);
-
-                kind = BulletKind.Long;
-                DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 10, 1).SetEase(Ease.InOutExpo);
-                Barrel.sprite = Barrels[2];
-                bullet = 10;
-                Count.text = "Å~" + bullet.ToString();
+                Bullets[i].SetActive(false);
+                Subs[i].SetActive(false);
             }
+            Bullets[1].SetActive(true);
+            Subs[1].SetActive(true);
+
+            kind = BulletKind.Explosion;
+            DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 5, 1).SetEase(Ease.InOutExpo);
+            Barrel.sprite = Barrels[1];
+            bullet = 15;
+            subcount = 5;
+            Count.text = "Å~" + bullet.ToString();
+            SubCount.text = "Å~" + subcount;
+            Discription[0].text = data.MainName[1];
+            Discription[1].text = data.SubName[1];
+            Discription[2].text = data.MainDiscription[1];
+            Discription[3].text = data.SubDiscription[1];
+
+            Destroy(collision.gameObject);
+        }
+        else if (collision.CompareTag("Lon"))
+        {
+            for (int i = 0; i < Bullets.Length; i++)
+            {
+                Bullets[i].SetActive(false);
+                Subs[i].SetActive(false);
+            }
+            Bullets[2].SetActive(true);
+            Subs[2].SetActive(true);
+
+            kind = BulletKind.Long;
+            DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 10, 1).SetEase(Ease.InOutExpo);
+            Barrel.sprite = Barrels[2];
+            bullet = 10;
+            subcount = 3;
+            Count.text = "Å~" + bullet.ToString();
+            SubCount.text = "Å~" + subcount;
+            Discription[0].text = data.MainName[2];
+            Discription[1].text = data.SubName[2];
+            Discription[2].text = data.MainDiscription[2];
+            Discription[3].text = data.SubDiscription[2];
+
+            Destroy(collision.gameObject);
         }
     }
 
@@ -302,7 +377,9 @@ public class Player : MonoBehaviourPunCallbacks
                 heart[i].sprite = full;
             }
 
-            transform.position = new Vector3(Random.Range(-8, 8), Random.Range(-8, 8));
+            Transform a = GameManager.instance.ResPosi(-1);
+            transform.position = a.position;
+            transform.rotation = a.rotation;
             player.SetBool("Death", false);
             muteki = true;
             DOVirtual.DelayedCall(1, ()=>muteki = false);
@@ -325,5 +402,10 @@ public class Player : MonoBehaviourPunCallbacks
     private void Death(int player)
     {
         GameManager.instance.SetDeathCount(player);
+    }
+
+    public void SetTrophy()
+    {
+        Instantiate(trophy, Trophy);
     }
 }

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6744389031322692509}
   - component: {fileID: 6744389031322692498}
   - component: {fileID: 6744389031322692499}
+  - component: {fileID: -6232693320866324151}
   m_Layer: 0
   m_Name: ItemEx
   m_TagString: Exp
@@ -143,6 +144,18 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
+--- !u!114 &-6232693320866324151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6744389031322692496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fadaa426eb2d1a84785acdafbf3ae049, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6744389031679401404
 GameObject:
   m_ObjectHideFlags: 0
