@@ -12,6 +12,10 @@ public class Mine : MonoBehaviourPunCallbacks
     {
         animator = GetComponent<Animator>();
         transform.parent = GameManager.instance.transform;
+        if (photonView.IsMine)
+        {
+            transform.gameObject.layer = 0;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

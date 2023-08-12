@@ -22,7 +22,8 @@ public class ItemBox : MonoBehaviourPunCallbacks
     {
         while (true)
         {
-            yield return new WaitForSeconds(5);
+            yield return a == null;
+            yield return new WaitForSeconds(10);
 
             if(a == null)
             {

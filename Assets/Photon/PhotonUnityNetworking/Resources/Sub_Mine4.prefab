@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 3075484552970220144}
   - component: {fileID: 3075484552970220145}
   - component: {fileID: 3075484552970220146}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Sub_Mine4
   m_TagString: Bullet2
   m_Icon: {fileID: 0}

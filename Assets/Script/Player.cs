@@ -193,7 +193,7 @@ public class Player : MonoBehaviourPunCallbacks
                         }
                         Count.text = "Å~" + bullet.ToString();
 
-                        DOVirtual.DelayedCall(1.5f, () =>
+                        DOVirtual.DelayedCall(2f, () =>
                         {
                             shotable = true;
                         });
@@ -331,7 +331,7 @@ public class Player : MonoBehaviourPunCallbacks
             DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 5, 1).SetEase(Ease.InOutExpo);
             Barrel.sprite = Barrels[1];
             bullet = 15;
-            subcount = 5;
+            subcount = 3;
             Count.text = "Å~" + bullet.ToString();
             SubCount.text = "Å~" + subcount;
             Discription[0].text = data.MainName[1];
@@ -354,7 +354,7 @@ public class Player : MonoBehaviourPunCallbacks
             kind = BulletKind.Long;
             DOTween.To(() => PlayerCamera.m_Lens.OrthographicSize, (value) => PlayerCamera.m_Lens.OrthographicSize = value, 10, 1).SetEase(Ease.InOutExpo);
             Barrel.sprite = Barrels[2];
-            bullet = 10;
+            bullet = 5;
             subcount = 3;
             Count.text = "Å~" + bullet.ToString();
             SubCount.text = "Å~" + subcount;
