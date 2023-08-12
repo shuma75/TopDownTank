@@ -61,10 +61,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             playerScore[i].id = i;
         }
         inGame = false;
-        timer.Subscribe(x =>
-        {
-            TimerText.text = x.ToString();
-        }).AddTo(this);
 
         List<string> nameList = new List<string>();
         List<int> killList = new List<int>();
@@ -79,7 +75,48 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         photonView.RPC(nameof(ReloadRanking), RpcTarget.All, nameList.ToArray(), killList.ToArray());
 
-        StartCoroutine(Timer());
+        int time;
+        switch (LobbyManager.Instance.GameTime.value)
+        {
+            case 0:
+                time = 60;
+                break;
+            case 1:
+                time = 120;
+                break;
+            case 2:
+                time = 180;
+                break;
+            case 3:
+                time = 240;
+                break;
+            case 4:
+                time = 300;
+                break;
+            case 5:
+                time = 600;
+                break;
+            default:
+                time = 30;
+                break;
+
+        }
+
+        timer.Subscribe(x =>
+        {
+            TimerText.text = x.ToString();
+        }).AddTo(this);
+
+        if (photonView.IsMine)
+        {
+            photonView.RPC(nameof(StartTimer), RpcTarget.AllViaServer, time);
+        }
+    }
+
+    [PunRPC]
+    private void StartTimer(int time)
+    {
+        StartCoroutine(Timer(time));
     }
 
     public void SetHitCount(int player)
@@ -115,8 +152,9 @@ public class GameManager : MonoBehaviourPunCallbacks
         playerScore[player - 1].death++;
     }
 
-    IEnumerator Timer()
+    IEnumerator Timer(int time)
     {
+        timer.Value = time;
         for(int i = 5;i > 0; i--)
         {
             yield return new WaitForSeconds(1);
@@ -132,8 +170,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         Debug.Log("Start!!");
         CountDownText.text = "STRAT";
 
-
-        timer.Value = 300;
         inGame = true;
 
         while (timer.Value > 0)

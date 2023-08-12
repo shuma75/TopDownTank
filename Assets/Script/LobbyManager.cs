@@ -45,6 +45,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     [SerializeField] Button LoOptionButton;
     [SerializeField] Text LobbyName;
     [SerializeField] Text[] PlayerName;
+    [SerializeField] public Dropdown GameTime;
     [Header("ƒIƒvƒVƒ‡ƒ“")]
     [SerializeField] Button CreditButton;
     [SerializeField] Button OpBackButton;
