@@ -25,7 +25,14 @@ public class Mine : MonoBehaviourPunCallbacks
             if (collision.CompareTag("Enemy"))
             {
                 animator.SetBool("Destroy", true);
+                photonView.RPC(nameof(PlayExSE), RpcTarget.All);  
             }
         }
+    }
+
+    [PunRPC]
+    private void PlayExSE()
+    {
+        AudioManager.Instance.PlaySE(1);
     }
 }

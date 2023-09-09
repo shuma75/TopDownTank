@@ -53,6 +53,9 @@ MonoBehaviour:
   - SetLogRPC
   - ReloadRanking
   - StartTimer
+  - PlayExSE
+  - PlayeSE
+  - PlaySE
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

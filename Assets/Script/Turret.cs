@@ -36,19 +36,26 @@ public class Turret : MonoBehaviourPunCallbacks
     {
         while (true)
         {
-            if(!GameManager.instance.inGame)break;
+            if (!GameManager.instance.inGame) break;
             yield return new WaitForSeconds(2);
 
-            if(target.Count > 0 )
+            if (target.Count > 0)
             {
                 Vector2 lookDir = target[0].position - transform.position;
 
                 float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg + 90f;
                 PhotonNetwork.Instantiate(BulletName, po.position, Quaternion.Euler(0, 0, angle - 180f));
                 animator.SetBool("Shot", true);
+                photonView.RPC(nameof(PlayExSE), RpcTarget.All);
                 DOVirtual.DelayedCall(1, () => animator.SetBool("Shot", false));
             }
         }
+    }
+
+    [PunRPC]
+    private void PlayExSE()
+    {
+        AudioManager.Instance.PlaySE(2);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

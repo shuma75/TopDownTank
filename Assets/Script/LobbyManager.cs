@@ -55,20 +55,31 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     void Start()
     {
         StartButton.onClick.AddListener(() => GameStart());
+        StartButton.onClick.AddListener(() => AudioManager.Instance.PlaySE(7));
         CreateRoomButton.onClick.AddListener(() => CreateRoom());
+        CreateRoomButton.onClick.AddListener(() => AudioManager.Instance.PlaySE(7));
         EndButton.onClick.AddListener(()=>Application.Quit());
+        EndButton.onClick.AddListener(() => AudioManager.Instance.PlaySE(7));
         LiBackButton.onClick.AddListener(() =>
         { 
             LobbyList.Priority = 0;
             if (PhotonNetwork.IsConnected)
                 PhotonNetwork.Disconnect();
         });
+
+        LiBackButton.onClick.AddListener(() => AudioManager.Instance.PlaySE(7));
         GameStartButton.onClick.AddListener(()=>StartGame());
+        GameStartButton.onClick.AddListener(() => AudioManager.Instance.PlaySE(7));
         LoQuitButton.onClick.AddListener(()=>PhotonNetwork.LeaveRoom());
+        LoQuitButton.onClick.AddListener(() => AudioManager.Instance.PlaySE(7));
         OptionButton.onClick.AddListener(() => Option.Priority = 50);
+        OptionButton.onClick.AddListener(() => AudioManager.Instance.PlaySE(7));
         LoOptionButton.onClick.AddListener(() => Option.Priority = 50);
+        LoOptionButton.onClick.AddListener(() => AudioManager.Instance.PlaySE(7));
         LiOptionButton.onClick.AddListener(() => Option.Priority = 50);
+        LiOptionButton.onClick.AddListener(() => AudioManager.Instance.PlaySE(7));
         OpBackButton.onClick.AddListener(()=>Option.Priority = 0);
+        OpBackButton.onClick.AddListener(() => AudioManager.Instance.PlaySE(7));
     }
 
     private void GameStart()
@@ -186,6 +197,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.IsMessageQueueRunning = false;
 
+        AudioManager.Instance.StopBGM();
+
         SceneManager.LoadSceneAsync("Game", LoadSceneMode.Additive);
     }
 
@@ -195,6 +208,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
         yield return SceneManager.UnloadSceneAsync("Game", UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
 
+        AudioManager.Instance.StopBGM();
+        AudioManager.Instance.PlayBGM(0);
         Debug.Log("èIÇÌÇ¡ÇΩ");
         PhotonNetwork.IsMessageQueueRunning = true;
     }

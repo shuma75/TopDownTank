@@ -14,11 +14,14 @@ public class Bullet : MonoBehaviourPunCallbacks
     [SerializeField] bool isBreak;
 
     Tween delay;
+    bool ex;
     // Start is called before the first frame update
     void Start()
     {
         if (photonView.IsMine)
         {
+            if(CompareTag("Bullet"))ex = true;
+            else ex = false;
             gameObject.tag = "Player";
 
             rb = GetComponent<Rigidbody2D>();
@@ -28,11 +31,17 @@ public class Bullet : MonoBehaviourPunCallbacks
             delay = DOVirtual.DelayedCall(LifeTime, () =>
             {
                 animator.SetBool("Exp", true);
+                if (ex) photonView.RPC(nameof(PlayeSE), RpcTarget.All);
                 rb.velocity = Vector2.zero;
             });
         }
     }
 
+    [PunRPC]
+    private void PlayeSE()
+    {
+        AudioManager.Instance.PlaySE(1);
+    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(photonView.IsMine)

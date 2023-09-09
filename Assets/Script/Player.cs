@@ -48,7 +48,8 @@ public class Player : MonoBehaviourPunCallbacks
 
     int HP;
     int bullet, subcount;
-    bool shotable, subable, muteki;
+    bool shotable, subable, muteki, _stop;
+    Collider2D collide;
     // Start is called before the first frame update
     void Start()
     {
@@ -56,6 +57,7 @@ public class Player : MonoBehaviourPunCallbacks
         {
             rb = GetComponent<Rigidbody2D>();
             player = GetComponent<Animator>();
+            collide = GetComponent<Collider2D>();
             Transform a = GameManager.instance.ResPosi(photonView.Owner.ActorNumber - 1);
             transform.position = a.position;
             transform.rotation = a.rotation;
@@ -96,6 +98,14 @@ public class Player : MonoBehaviourPunCallbacks
             var Vertical = Input.GetAxis("Vertical");
             var Horizontal = Input.GetAxis("Horizontal");
 
+            if(_stop && Vertical < 0.2f)
+            {
+                photonView.RPC(nameof(PlaySE), RpcTarget.All, 5);
+                _stop = false;
+            }
+
+            if(!_stop && Vertical > 0.2f)_stop = true;
+
             if(Mathf.Abs(Vertical) > 0)
             {
                 tiya.Play();
@@ -124,7 +134,7 @@ public class Player : MonoBehaviourPunCallbacks
                 {
                     case BulletKind.Normal:
                         PhotonNetwork.Instantiate(BulletName[0], po.position, Quaternion.Euler(0, 0, angle - 180f));
-
+                        photonView.RPC(nameof(PlaySE), RpcTarget.All, 2);
                         DOVirtual.DelayedCall(0.5f, () =>
                         {
                             shotable = true;
@@ -132,6 +142,7 @@ public class Player : MonoBehaviourPunCallbacks
                         break;
                     case BulletKind.Explosion:
                         PhotonNetwork.Instantiate(BulletName[1], po.position, Quaternion.Euler(0, 0, angle - 180f));
+                        photonView.RPC(nameof(PlaySE), RpcTarget.All, 2);
                         bullet--;
                         if(bullet <= 0)
                         {
@@ -166,6 +177,7 @@ public class Player : MonoBehaviourPunCallbacks
                         break;
                     case BulletKind.Long:
                         PhotonNetwork.Instantiate(BulletName[2], po.position, Quaternion.Euler(0, 0, angle - 180f));
+                        photonView.RPC(nameof(PlaySE), RpcTarget.All, 0);
                         bullet--;
                         if (bullet <= 0)
                         {
@@ -228,8 +240,6 @@ public class Player : MonoBehaviourPunCallbacks
                 }
                 DOVirtual.DelayedCall(1,()=> subable = true);
             }
-
-
         }
         
         if(photonView.IsMine &&!GameManager.instance.inGame)
@@ -242,6 +252,12 @@ public class Player : MonoBehaviourPunCallbacks
         tiya.startRotation = -transform.eulerAngles.z * Mathf.Deg2Rad;
     }
 
+    [PunRPC]
+    private void PlaySE(int index)
+    {
+        AudioManager.Instance.PlaySE(index);
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (photonView.IsMine)
@@ -249,6 +265,7 @@ public class Player : MonoBehaviourPunCallbacks
             if (collision.CompareTag("Bullet") || collision.CompareTag("Bullet1") || collision.CompareTag("Bullet2"))
             {
                 if (muteki) return;
+                photonView.RPC(nameof(PlaySE), RpcTarget.All, 6);
                 var owner = collision.GetComponent<PhotonView>();
                 photonView.RPC(nameof(Hit), RpcTarget.All, owner.Owner.ActorNumber);
                 switch (collision.tag)
@@ -279,6 +296,7 @@ public class Player : MonoBehaviourPunCallbacks
                 if (HP <= 0)
                 {
                     player.SetBool("Death", true);
+                    photonView.RPC(nameof(PlaySE), RpcTarget.All, 1);
                     DOVirtual.DelayedCall(3, () =>ReSpawn());
 
                     photonView.RPC(nameof(Kill), RpcTarget.All, owner.Owner.ActorNumber);
@@ -296,6 +314,7 @@ public class Player : MonoBehaviourPunCallbacks
 
         if (collision.CompareTag("Nor"))
         {
+            photonView.RPC(nameof(PlaySE), RpcTarget.All, 8);
             for (int i = 0; i < Bullets.Length; i++)
             {
                 Bullets[i].SetActive(false);
@@ -319,7 +338,8 @@ public class Player : MonoBehaviourPunCallbacks
         }
         else if (collision.CompareTag("Exp"))
         {
-            for(int i = 0; i < Bullets.Length; i++)
+            photonView.RPC(nameof(PlaySE), RpcTarget.All, 8);
+            for (int i = 0; i < Bullets.Length; i++)
             {
                 Bullets[i].SetActive(false);
                 Subs[i].SetActive(false);
@@ -343,6 +363,7 @@ public class Player : MonoBehaviourPunCallbacks
         }
         else if (collision.CompareTag("Lon"))
         {
+            photonView.RPC(nameof(PlaySE), RpcTarget.All, 8);
             for (int i = 0; i < Bullets.Length; i++)
             {
                 Bullets[i].SetActive(false);
@@ -382,6 +403,7 @@ public class Player : MonoBehaviourPunCallbacks
             transform.rotation = a.rotation;
             player.SetBool("Death", false);
             muteki = true;
+            collide.enabled = true;
             DOVirtual.DelayedCall(1, ()=>muteki = false);
         }
     }
@@ -401,6 +423,7 @@ public class Player : MonoBehaviourPunCallbacks
     [PunRPC]
     private void Death(int player)
     {
+        collide.enabled = false;
         GameManager.instance.SetDeathCount(player);
     }
 

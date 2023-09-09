@@ -170,6 +170,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         Debug.Log("Start!!");
         CountDownText.text = "STRAT";
 
+        AudioManager.Instance.PlayBGM(1);
         inGame = true;
 
         while (timer.Value > 0)
@@ -257,6 +258,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         //StartCoroutine(LobbyManager.Instance.EndGameIE());
         SceneManager.UnloadSceneAsync("Game", UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
+
+        AudioManager.Instance.StopBGM();
+        AudioManager.Instance.PlayBGM(0);
     }
 
     public void SetLog(string kill, string death)
